@@ -15,7 +15,6 @@ int buttonINPUT = 12;
 
 void printShortTimeDate() {
   dtc = rtc.getDateTime();
-  //asd
   int hour = dtc.hour;
   int minute = dtc.minute;
   //int sec = dtc.second;
