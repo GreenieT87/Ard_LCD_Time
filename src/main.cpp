@@ -15,7 +15,7 @@ int buttonINPUT = 12;
  * off the DS3231 RTC
  * @method readShortTimeDate
  */
-void RTCreadShortTimeDate() {
+char RTCreadShortTimeDate() {
   dtc = rtc.getDateTime();
   int hour = dtc.hour;
   int minute = dtc.minute;
@@ -33,7 +33,7 @@ void RTCreadShortTimeDate() {
  * off the DS3231 RTC
  * @method printLongTimeDate
  */
-void RTCreadLongTimeDate() {
+char RTCreadLongTimeDate() {
   dtc = rtc.getDateTime();
   int hour = dtc.hour;
   int minute = dtc.minute;
@@ -72,14 +72,14 @@ void setup() {
 void loop() {
   if (digitalRead(buttonINPUT) == HIGH){
     lcd.home();
-    int temp = DHTreadTemprature();
-    lcd.print(temp);
+    lcd.print(DHTreadTemprature());
     delay(1000);
   }
   else{
     lcd.setCursor(0, 1);
-    int hum = DHTreadHumidity();
-    lcd.print(hum);
+  //  int hum = DHTreadHumidity();
+    lcd.print(DHTreadHumidity());
+    lcd.print(" ");
     delay(1000);
   }
 }
