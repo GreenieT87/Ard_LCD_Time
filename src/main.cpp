@@ -2,18 +2,20 @@
 #include <DS3231.h>
 DS3231  rtc;
 RTCDateTime dtc;
-
+#include <myDHT.h>
 #include <LiquidCrystal.h>
 const int rs = 6, en = 7, d4 = 5, d5 = 4, d6 = 3, d7 = 10;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
-#include <dht.h>
-dht DHT;
-#define DHT11_PIN 2
 
 int buttonINPUT = 12;
 
-void printShortTimeDate() {
+/**
+ * Returns a string containing time and date in a short format like "HH:MM  DD-MM"
+ * off the DS3231 RTC
+ * @method readShortTimeDate
+ */
+char RTCreadShortTimeDate() {
   dtc = rtc.getDateTime();
   int hour = dtc.hour;
   int minute = dtc.minute;
@@ -22,76 +24,41 @@ void printShortTimeDate() {
   int month = dtc.month;
   //int year = dtc.year;
   char times[25];
-  sprintf(times, "  %02d %02d  %02d-%02d  ", hour, minute, day, month);
-  char times1[25];
-  sprintf(times1, "  %02d:%02d  %02d-%02d  ", hour, minute, day, month);
-  char date[25];
-  sprintf(date, "%02d-%02d", day, month);
+  sprintf(times, "%02d %02d  %02d-%02d", hour, minute, day, month);
 
-  lcd.home();
-  lcd.print(times);
-  delay(500);
-  lcd.home();
-  lcd.print(times1);
+  return times;
 }
-void printLongTimeDate() {
+/**
+ * Returns a string containing time and date in a long format like "HH:MM:SS  DD-MM-YYYY"
+ * off the DS3231 RTC
+ * @method printLongTimeDate
+ */
+char RTCreadLongTimeDate() {
   dtc = rtc.getDateTime();
   int hour = dtc.hour;
   int minute = dtc.minute;
-  //int sec = dtc.second;
+  int sec = dtc.second;
   int day = dtc.day;
   int month = dtc.month;
   int year = dtc.year;
   char times[25];
-  sprintf(times, "%02d %02d %02d %02d %02d", hour, minute, day, month, year);
-  char times1[25];
-  sprintf(times1, "%02d:%02d %02d-%02d-%02d", hour, minute, day, month, year);
+  sprintf(times, "%02d:%02d:%02d %02d-%02d-%04d", hour, minute, day, month, year);
 
-  lcd.home();
-  lcd.print(times);
-  delay(500);
-  lcd.home();
-  lcd.print(times1);
+  return times;
 }
-void printTemprature() {
-  dtc = rtc.getDateTime();
-  int hour = dtc.hour;
-  int minute = dtc.minute;
-  int sec = dtc.second;
-
-  char times[25];
-  sprintf(times, "%02d:%02d:%02d", hour, minute, sec);
-  lcd.setCursor(0,0);
-  lcd.print("Time: ");
-  lcd.print(times);
-  lcd.setCursor(0,1);
-
+/**
+ * Retunrs an INT containing the temperature off the DS3231 RTC
+ * @method printTemprature
+ */
+void RTCprintTemprature() {
   int temp = rtc.readTemperature();
-  lcd.print("Temp: ");
-  lcd.print(temp);
-  lcd.print(" C        ");
-}
-void printDHT() {
-  int chk = DHT.read11(DHT11_PIN);
-  dtc = rtc.getDateTime();
-  int hour = dtc.hour;
-  int minute = dtc.minute;
-  int sec = dtc.second;
-  int temps = int(DHT.temperature);
-  int hums = int(DHT.humidity);
 
-  char times[25];
-  sprintf(times, "    %02d:%02d:%02d    ", hour, minute, sec);
-  char temp[25];
-  sprintf(temp, "T: %02d*C  H: %02d", temps, hums);
-
-  if (chk == -1) {
-    lcd.home();
-    lcd.print(times);
-    lcd.setCursor(0,1);
-    lcd.print(temp);lcd.print("%  ");
-  }
+  return temp;
 }
+/**
+ * Retunrs an INT containing the temperature off the DHT11
+ * @method DHTreadTemprature
+ */
 
 void setup() {
   pinMode(buttonINPUT, INPUT_PULLUP);
@@ -104,13 +71,15 @@ void setup() {
 
 void loop() {
   if (digitalRead(buttonINPUT) == HIGH){
-    lcd.setCursor(0, 1);
-    lcd.print("                ");
-    printShortTimeDate();
+    lcd.home();
+    lcd.print(DHTreadTemprature());
     delay(1000);
   }
   else{
-    delay(500);
-    printDHT();
+    lcd.setCursor(0, 1);
+  //  int hum = DHTreadHumidity();
+    lcd.print(DHTreadHumidity());
+    lcd.print(" ");
+    delay(1000);
   }
 }
