@@ -2,11 +2,10 @@
 #include <DS3231.h>
 DS3231  rtc;
 RTCDateTime dtc;
-#include <myDHT.h>
+
 #include <LiquidCrystal.h>
 const int rs = 6, en = 7, d4 = 5, d5 = 4, d6 = 3, d7 = 10;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-
 
 int buttonINPUT = 12;
 
@@ -15,7 +14,7 @@ int buttonINPUT = 12;
  * off the DS3231 RTC
  * @method readShortTimeDate
  */
-char RTCreadShortTimeDate() {
+void RTCreadShortTimeDate() {
   dtc = rtc.getDateTime();
   int hour = dtc.hour;
   int minute = dtc.minute;
@@ -24,16 +23,16 @@ char RTCreadShortTimeDate() {
   int month = dtc.month;
   //int year = dtc.year;
   char times[25];
-  sprintf(times, "%02d %02d  %02d-%02d", hour, minute, day, month);
+  sprintf(times, "%02d:%02d  %02d-%02d", hour, minute, day, month);
 
-  return times;
+  lcd.print(times);
 }
 /**
  * Returns a string containing time and date in a long format like "HH:MM:SS  DD-MM-YYYY"
  * off the DS3231 RTC
  * @method printLongTimeDate
  */
-char RTCreadLongTimeDate() {
+void RTCreadLongTimeDate() {
   dtc = rtc.getDateTime();
   int hour = dtc.hour;
   int minute = dtc.minute;
@@ -41,10 +40,9 @@ char RTCreadLongTimeDate() {
   int day = dtc.day;
   int month = dtc.month;
   int year = dtc.year;
-  char times[25];
-  sprintf(times, "%02d:%02d:%02d %02d-%02d-%04d", hour, minute, day, month, year);
-
-  return times;
+  char times1[50];
+  sprintf(times1, "%02d:%02d:%02d %02d-%02d-%04d", hour, minute, sec, day, month, year);
+  lcd.print(times1);
 }
 /**
  * Retunrs an INT containing the temperature off the DS3231 RTC
@@ -53,7 +51,7 @@ char RTCreadLongTimeDate() {
 void RTCprintTemprature() {
   int temp = rtc.readTemperature();
 
-  return temp;
+  lcd.print(temp);
 }
 /**
  * Retunrs an INT containing the temperature off the DHT11
@@ -72,14 +70,13 @@ void setup() {
 void loop() {
   if (digitalRead(buttonINPUT) == HIGH){
     lcd.home();
-    lcd.print(DHTreadTemprature());
-    delay(1000);
+    RTCreadLongTimeDate();
+      delay(1000);
   }
   else{
     lcd.setCursor(0, 1);
   //  int hum = DHTreadHumidity();
-    lcd.print(DHTreadHumidity());
-    lcd.print(" ");
+    RTCreadShortTimeDate();
     delay(1000);
   }
 }
