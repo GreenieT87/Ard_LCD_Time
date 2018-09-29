@@ -106,7 +106,9 @@ void loop() {
   }
   else{
     lcd.setCursor(0, 1);
-    RTCreadLongTimeDate();
+    lcd.print(" ");
+    RTCprintTemprature();
+    lcd.print(" *C");
     delay(1000);
   }
 }
