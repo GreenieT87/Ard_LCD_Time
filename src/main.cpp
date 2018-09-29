@@ -14,7 +14,7 @@ int buttonINPUT = 12;
  * off the DS3231 RTC
  * @method readShortTimeDate
  */
-void RTCreadShortTimeDate() {
+void RTCreadShortDotedTimeDate() {
   dtc = rtc.getDateTime();
   int hour = dtc.hour;
   int minute = dtc.minute;
@@ -26,6 +26,39 @@ void RTCreadShortTimeDate() {
   sprintf(times, "%02d:%02d  %02d-%02d", hour, minute, day, month);
 
   lcd.print(times);
+}
+/**
+ * Returns a string containing time and date in a short undotted format like "HH MM  DD-MM"
+ * off the DS3231 RTC
+ * @method readShortTimeDate
+ */
+void RTCreadShortTimeDate() {
+  dtc = rtc.getDateTime();
+  int hour = dtc.hour;
+  int minute = dtc.minute;
+  //int sec = dtc.second;
+  int day = dtc.day;
+  int month = dtc.month;
+  //int year = dtc.year;
+  char times1[25];
+  sprintf(times1, "%02d %02d  %02d-%02d", hour, minute, day, month);
+
+  lcd.print(times1);
+}
+/**
+ * Prints Time and Date in a short format with blinking timedevider in
+ * on the first row of a 1602LCD
+ * @method RTCprintShortTimeDate
+ */
+void RTCprintShortTimeDate() {
+  lcd.home();
+  lcd.print("  ");
+  RTCreadShortDotedTimeDate();
+  delay(1000);
+  lcd.home();
+  lcd.print("  ");
+  RTCreadShortTimeDate();
+  delay(500);
 }
 /**
  * Returns a string containing time and date in a long format like "HH:MM:SS  DD-MM-YYYY"
@@ -69,13 +102,11 @@ void setup() {
 
 void loop() {
   if (digitalRead(buttonINPUT) == HIGH){
-    lcd.home();
-    RTCreadLongTimeDate();
-      delay(1000);
+    RTCprintShortTimeDate();
   }
   else{
     lcd.setCursor(0, 1);
-    RTCreadShortTimeDate();
+    RTCreadLongTimeDate();
     delay(1000);
   }
 }
