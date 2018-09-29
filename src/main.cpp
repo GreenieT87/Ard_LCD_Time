@@ -75,7 +75,6 @@ void loop() {
   }
   else{
     lcd.setCursor(0, 1);
-  //  int hum = DHTreadHumidity();
     RTCreadShortTimeDate();
     delay(1000);
   }
